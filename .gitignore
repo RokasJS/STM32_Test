@@ -1,0 +1,8 @@
+/.settings
+/Debug
+STM32_Test.ioc
+.cproject
+STM32_Test Debug.launch
+STM32L053C8TX_FLASH.ld
+.mxproject
+.project
