@@ -27,7 +27,7 @@ else
 
 // Transmit through Virtual UART or UART
 void print(const char * n){
-	//HAL_UART_Transmit(&huart1, (uint8_t*) n, 30, 10);
+	//HAL_UART_Transmit(&huart1, (uint8_t*) n, strlen(n), 10);
 	CDC_Transmit_FS((uint8_t*)n, strlen(n));
 	HAL_Delay(10);
 };
