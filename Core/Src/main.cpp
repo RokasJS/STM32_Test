@@ -24,6 +24,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "usbd_cdc_if.h"
+#include "testing.hpp"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -44,8 +45,7 @@
 UART_HandleTypeDef huart1;
 
 /* USER CODE BEGIN PV */
-char final[50];
-uint8_t button, last;
+uint8_t button;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -53,7 +53,7 @@ void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_USART1_UART_Init(void);
 /* USER CODE BEGIN PFP */
-
+void print(const char * n);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -65,6 +65,36 @@ if(HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_0))
 else
 	return 0;
 }
+
+void print(const char * n){
+	//HAL_UART_Transmit(&huart1, (uint8_t*) n, 30, 10);
+	CDC_Transmit_FS((uint8_t*)n, strlen(n));
+	HAL_Delay(10);
+};
+
+NEW_GROUP(FirstG);
+NEW_GROUP(SecondG);
+NEW_GROUP(ThirdG);
+
+TEST_G(FirstG){
+  TEST(4 == 4);
+  TEST(5 == 5);
+  TEST(4 == 9);
+}END
+
+TEST_G(SecondG){
+  TEST(4 == 4);
+  TEST(5 == 5);
+  TEST(7 == 9);
+}END
+
+void test_func(){
+	USING_GROUP(ThirdG);
+	TEST(1==1);
+	TEST(1==2);
+	TEST(1==3);
+}
+
 
 /* USER CODE END 0 */
 
@@ -99,7 +129,9 @@ int main(void)
   MX_USART1_UART_Init();
   MX_USB_DEVICE_Init();
   /* USER CODE BEGIN 2 */
-  last = 1;
+  //Tests
+  test_func();
+  //test_funcs();
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -107,12 +139,10 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
-	  button = Buttons_GetState();
-	  if (button != last){
-	  	sprintf(final, "Mygt %2d /n", button);
-	  	CDC_Transmit_FS((uint8_t*)final, 50);
-	  }
-	  	last = button;
+	if(Buttons_GetState())
+	REPORT_ALL;
+
+
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
