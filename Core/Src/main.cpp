@@ -1,63 +1,22 @@
-/* USER CODE BEGIN Header */
-/**
-  ******************************************************************************
-  * @file           : main.c
-  * @brief          : Main program body
-  ******************************************************************************
-  * @attention
-  *
-  * <h2><center>&copy; Copyright (c) 2021 STMicroelectronics.
-  * All rights reserved.</center></h2>
-  *
-  * This software component is licensed by ST under BSD 3-Clause license,
-  * the "License"; You may not use this file except in compliance with the
-  * License. You may obtain a copy of the License at:
-  *                        opensource.org/licenses/BSD-3-Clause
-  *
-  ******************************************************************************
-  */
-/* USER CODE END Header */
+
 /* Includes ------------------------------------------------------------------*/
 #include <main.hpp>
 #include "usb_device.h"
-
-/* Private includes ----------------------------------------------------------*/
-/* USER CODE BEGIN Includes */
 #include "usbd_cdc_if.h"
 #include "testing.hpp"
-/* USER CODE END Includes */
-
-/* Private typedef -----------------------------------------------------------*/
-/* USER CODE BEGIN PTD */
-
-/* USER CODE END PTD */
-
-/* Private define ------------------------------------------------------------*/
-/* USER CODE BEGIN PD */
-/* USER CODE END PD */
-
-/* Private macro -------------------------------------------------------------*/
-/* USER CODE BEGIN PM */
-
-/* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
 UART_HandleTypeDef huart1;
-
-/* USER CODE BEGIN PV */
 uint8_t button;
-/* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_USART1_UART_Init(void);
-/* USER CODE BEGIN PFP */
 void print(const char * n);
-/* USER CODE END PFP */
 
-/* Private user code ---------------------------------------------------------*/
-/* USER CODE BEGIN 0 */
+/* Private functions ---------------------------------------------------------*/
+// Get button state (0 or 1)
 uint8_t Buttons_GetState (void)
 {
 if(HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_0))
@@ -66,28 +25,33 @@ else
 	return 0;
 }
 
+// Transmit through Virtual UART or UART
 void print(const char * n){
 	//HAL_UART_Transmit(&huart1, (uint8_t*) n, 30, 10);
 	CDC_Transmit_FS((uint8_t*)n, strlen(n));
 	HAL_Delay(10);
 };
 
+// Create new groups
 NEW_GROUP(FirstG);
 NEW_GROUP(SecondG);
 NEW_GROUP(ThirdG);
 
+// First test group
 TEST_G(FirstG){
   TEST(4 == 4);
   TEST(5 == 5);
   TEST(4 == 9);
 }END
 
+// Second test group
 TEST_G(SecondG){
   TEST(4 == 4);
   TEST(5 == 5);
   TEST(7 == 9);
 }END
 
+// Third test group
 void test_func(){
 	USING_GROUP(ThirdG);
 	TEST(1==1);
@@ -95,57 +59,24 @@ void test_func(){
 	TEST(1==3);
 }
 
-
-/* USER CODE END 0 */
-
-/**
-  * @brief  The application entry point.
-  * @retval int
-  */
 int main(void)
 {
-  /* USER CODE BEGIN 1 */
-
-  /* USER CODE END 1 */
-
-  /* MCU Configuration--------------------------------------------------------*/
-
-  /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
   HAL_Init();
-
-  /* USER CODE BEGIN Init */
-
-  /* USER CODE END Init */
-
   /* Configure the system clock */
   SystemClock_Config();
-
-  /* USER CODE BEGIN SysInit */
-
-  /* USER CODE END SysInit */
-
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_USART1_UART_Init();
   MX_USB_DEVICE_Init();
-  /* USER CODE BEGIN 2 */
-  //Tests
+  // Run 3rd test group
   test_func();
-  //test_funcs();
-  /* USER CODE END 2 */
 
-  /* Infinite loop */
-  /* USER CODE BEGIN WHILE */
+  // Main while loop
   while (1)
   {
-    /* USER CODE END WHILE */
 	if(Buttons_GetState())
-	REPORT_ALL;
-
-
-    /* USER CODE BEGIN 3 */
+		REPORT_ALL;	// Report all tests
   }
-  /* USER CODE END 3 */
 }
 
 /**
@@ -249,11 +180,6 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
 }
-
-/* USER CODE BEGIN 4 */
-
-/* USER CODE END 4 */
-
 /**
   * @brief  This function is executed in case of error occurrence.
   * @retval None
